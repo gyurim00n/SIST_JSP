@@ -34,7 +34,7 @@
   	<c:when test="${empty loginUser}">
   	<div id="logon">
   	<!-- //로그인 하지 않은 경우... -->
-  	   <form action="ex02_logon.jsp" method="get">
+  	   <form action="${pageContext.request.contextPath}/mvc/member/login.mem" method="post">
 	       아이디 : <input type="text" name="id" value="admin"> <br>
 	       비밀번호 :  <input type="password" name="passwd" value="1234"> <br>
 	       <input type="submit" value="로그인"> 
@@ -67,7 +67,7 @@
  
  
   <!-- 로그인 X여도 사용 가능 -->
-  <a href="${pageContext.request.contextPath}/days08/board/list.jsp ">게시판</a><br />
+  <a href="${pageContext.request.contextPath}/mvc/board/list.htm ">게시판</a><br />
   
   
 </div>

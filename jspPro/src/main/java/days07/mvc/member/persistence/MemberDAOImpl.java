@@ -68,39 +68,32 @@ public class MemberDAOImpl implements MemberDAO{
 		return list;
 	}
 
-	public List<MemberDTO> search(String id, String passwd) throws SQLException {
+	public MemberDTO login(String id, String passwd) throws SQLException {
+	    String sql = """
+	            SELECT seq, id, name, passwd, role
+	            FROM member
+	            WHERE id = ? AND passwd = ?
+	            """;
 
-		String sql = """
-				SELECT *
-				FROM member
-				WHERE 1 = 1 AND 
-				id = ? AND
-				passwd = ? 
-				""";
-		pstmt.setString(1, id);
-		pstmt.setString(2, passwd);
-		
-		this.rs = this.pstmt.executeQuery();
+	    MemberDTO dto = null;
 
-		List<MemberDTO> list = null;
-		if ( this.rs.next() ) {
-			list = new ArrayList<MemberDTO>();
-			do {
-				this.mto = MemberDTO.builder()
-						.seq( this.rs.getInt("seq") )
-						.id( this.rs.getString("id") )
-						.name(this.rs.getString("name"))
-						.passwd( this.rs.getString("password") )
-						.role( this.rs.getString("role"))
-						.build();
-				list.add(mto);
-			} while (this.rs.next());          
-		} // if
+	    try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
+	        pstmt.setString(1, id);
+	        pstmt.setString(2, passwd);
 
-		if( this.rs != null ) this.rs.close();
-		if( this.pstmt != null ) this.pstmt.close();
-
-		return list;
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            if (rs.next()) {
+	                dto = MemberDTO.builder()
+	                        .seq(rs.getInt("seq"))
+	                        .id(rs.getString("id"))
+	                        .name(rs.getString("name"))
+	                        .passwd(rs.getString("passwd"))
+	                        .role(rs.getString("role"))
+	                        .build();
+	            }
+	        }
+	    }
+	    return dto; // 회원이 없으면 null 반환
 	}
 
 

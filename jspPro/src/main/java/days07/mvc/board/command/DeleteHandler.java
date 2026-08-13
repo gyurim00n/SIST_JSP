@@ -5,18 +5,48 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.util.ConnectionProvider;
-import com.util.DBConn;
 
-import days07.mvc.board.domain.BoardDTO;
 import days07.mvc.board.persistence.BoardDAO;
 import days07.mvc.board.persistence.BoardDAOImpl;
+import days08.AuthUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public class DeleteHandler implements CommandHandler {
 
 	@Override
 	public String process(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		PrintWriter out = response.getWriter();
+		response.setContentType("text/html; charset=UTF-8");
+		// 1. [로그인 여부 체크] 세션의 authUser 확인
+				// ---------------------------------------------------------------
+				HttpSession session = request.getSession(false);
+				AuthUser authUser = (session != null) ? (AuthUser) session.getAttribute("authUser") : null;
+
+				if (authUser == null) {
+					out.println("<script>");
+					out.println("  alert('로그인이 필요한 서비스입니다.');");
+					out.println("  location.href='" + request.getContextPath() + "/days08/board/ex02_default.jsp';");
+					out.println("</script>");
+					out.flush();
+					return null;
+				}
+				
+				// ADMIN이거나 작성자 본인인지 검사
+				boolean isAdmin = "ADMIN".equalsIgnoreCase(authUser.getLoginUserRole());
+				String username = request.getParameter("writer"); 
+				boolean isWriter = (username != null) && authUser.getLoginUser().equals(username);
+
+				if (!isAdmin && !isWriter) {
+					out.println("<script>");
+					out.println("  alert('삭제 권한이 없습니다.');");
+					out.println("  history.back();");
+					out.println("</script>");
+					out.flush();
+					return null;
+				}
+				
 		//doGet, doPost 쓸수 없어서 if문으로 getMethod=GET/ POST 분리
 		String requestMethod = request.getMethod();
 		System.out.println("❤️❤️❤️ DeleteHandler requestMethod: "+requestMethod);
@@ -37,7 +67,7 @@ public class DeleteHandler implements CommandHandler {
 			try {
 				
 				rowCount = dao.delete(seq, pwd);
-				PrintWriter out = response.getWriter();
+				out = response.getWriter();
 
 				if(rowCount ==1) {	//글 삭제 성공
 		            String location = "redirect:" + request.getContextPath() + "/mvc/board/list.htm?del=" + seq;

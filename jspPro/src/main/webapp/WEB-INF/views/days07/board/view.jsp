@@ -63,7 +63,7 @@
 				<tr>
 					<td colspan="4" align="center">
 						<a href="${pageContext.request.contextPath}/mvc/board/edit.htm?seq=${dto.seq}">수정</a>
-						<a href="${pageContext.request.contextPath}/mvc/board/delete.htm?seq=${dto.seq}">삭제</a>
+						<a href="${pageContext.request.contextPath}/mvc/board/delete.htm?seq=${dto.seq}&writer=${dto.writer}">삭제</a>
 						<a href="${pageContext.request.contextPath}/mvc/board/list.htm">목록</a>
 						<input type="button" id="btnModalDelete" value="모달창 삭제"/>
 						</td>
@@ -81,6 +81,7 @@
 				</tr>
 
 				<tr>
+					
 					<td align="center">비밀번호</td>
 					<td><input type="password" name="pwd" size="15"
 						required="required"></td>

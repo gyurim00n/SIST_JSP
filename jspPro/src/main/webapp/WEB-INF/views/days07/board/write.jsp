@@ -33,7 +33,7 @@
       <tr>
          <td align="center">이름</td>
          <td><input type="text" name="writer" size="15"
-            autofocus="autofocus" required="required" value="룰루랄라"></td>
+            autofocus="autofocus" required="required" value="${dto.writer}" disabled="disabled"></td>
       </tr>
       <tr>
          <td align="center">비밀번호</td>

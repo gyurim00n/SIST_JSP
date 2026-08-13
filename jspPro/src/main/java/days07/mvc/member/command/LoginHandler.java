@@ -9,53 +9,52 @@ import days07.mvc.board.command.CommandHandler;
 import days07.mvc.member.domain.MemberDTO;
 import days07.mvc.member.persistence.MemberDAO;
 import days07.mvc.member.persistence.MemberDAOImpl;
+import days08.AuthUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public class LoginHandler implements CommandHandler {
 
 
 	@Override
 	public String process(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		//1.로직 처리
-		System.out.println("> View Handler 07.process() ...");
-		
-		long seq = Long.parseLong(request.getParameter("seq"));
-		  
-		//1.a목록로직처리
-		Connection conn = ConnectionProvider.getConnection();
-		MemberDTO mto = null;
-		MemberDAO mao = new MemberDAOImpl(conn);
-		int rowCount =0;
-		try {
-			conn.setAutoCommit(false);
-			
-		
-	
-		} catch (SQLException e) {
-			try {
-				conn.rollback();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			System.out.println(">3. ViewHandler.process Exception....");
-			e.printStackTrace();
-		} finally {
-			try {
-				conn.setAutoCommit(true);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				//list.htm으로 리다이렉트...
-			}
-			conn.close();
-		}
-		
-		request.setAttribute("mto", mto);
-		
-	
-		return "/WEB-INF/views/days07/board/view.jsp";
-	}
+		// GET 요청: 로그인 폼 페이지로 이동
+        if (request.getMethod().equals("GET")) {
+            return "/days08/board/ex02_logon.jsp"; // 뷰(JSP) 경로
+        } 
+        
+        // POST 요청: 로그인 인증 처리
+        else if (request.getMethod().equals("POST")) {
+            String id = request.getParameter("id");
+            String passwd = request.getParameter("passwd");
+            
+            // 리다이렉트 기본 경로
+            String location = request.getContextPath() + "/days08/board/ex02_default.jsp";
+
+            try (Connection conn = ConnectionProvider.getConnection()) {
+                MemberDAO dao = new MemberDAOImpl(conn);
+                MemberDTO member = dao.login(id, passwd); // DB 조회 (앞서 작성한 login 메서드)
+
+                if (member != null) {
+                    // [성공] 세션 얻어와서 AuthUser 저장
+                    HttpSession session = request.getSession();
+                    session.setAttribute("authUser", new AuthUser(member.getId(), member.getRole()));
+                } else {
+                    // [실패] 실패 파라미터 추가
+                    location += "?on=fail";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                location += "?on=fail";
+            }
+
+            // Handler에서 직접 redirect 처리 후 null 반환 (또는 Controller 설계 방식에 맞춰 반환)
+            response.sendRedirect(location);
+            return null;
+        }
+
+        return null;
+    }
 
 }

@@ -1,10 +1,8 @@
 package days07.mvc.member.persistence;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
-import days07.mvc.board.domain.BoardDTO;
 import days07.mvc.member.domain.MemberDTO;
 
 
@@ -37,5 +35,5 @@ public interface MemberDAO {
 	//멤버 리스트 가져오기 
 	public List<MemberDTO> select() throws SQLException;
 	
-	public List<MemberDTO> search(String id, String passwd) throws SQLException;
+	public MemberDTO login(String id, String passwd) throws SQLException;
 }
