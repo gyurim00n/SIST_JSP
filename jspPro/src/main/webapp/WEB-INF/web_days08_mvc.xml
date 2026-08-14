@@ -33,5 +33,41 @@
 	 <res-auth>Container</res-auth>
 	</resource-ref>
 	
+	<!-- MVC 패턴 게시판 구현할 때...컨트롤러 서블릿 등록 -->
+	<servlet>
+		<servlet-name>dispatcher</servlet-name>
+		<servlet-class>days07.mvc.board.controller.DispatcherServlet</servlet-class>
+		<init-param>
+			<description>요청URL과 커맨드핸들러 맵핑</description>
+			<param-name>urlMappingPath</param-name>
+			<param-value>/WEB-INF/commandHandler.properties</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 	
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<!-- <url-pattern>/</url-pattern> -->
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- MVC 패턴 게시판 구현할 때...컨트롤러 서블릿 등록 -->
+	<servlet>
+		<servlet-name>dispatcherMember</servlet-name>
+		<servlet-class>days07.mvc.member.controller.DispatcherServlet</servlet-class>
+		<init-param>
+			<description>멤버 요청URL과 커맨드핸들러 맵핑</description>
+			<param-name>urlMappingPath</param-name>
+			<param-value>/WEB-INF/commandHandler.properties</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<!-- <url-pattern>/</url-pattern> -->
+		<url-pattern>*.mem</url-pattern>
+	</servlet-mapping>
+
 </web-app>

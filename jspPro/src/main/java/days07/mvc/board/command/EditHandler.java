@@ -71,7 +71,7 @@ public class EditHandler implements CommandHandler {
 			isAdmin = "ADMIN".equalsIgnoreCase(authUser.getLoginUserRole());
 			isWriter = authUser.getLoginUser().equals(dto.getWriter());
 
-			if (!isAdmin && !isWriter) {
+			if (!isWriter) {
 				out.println("<script>");
 				out.println("  alert('수정 권한이 없습니다.');");
 				out.println("  history.back();");

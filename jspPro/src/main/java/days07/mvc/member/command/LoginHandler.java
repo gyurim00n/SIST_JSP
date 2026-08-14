@@ -34,7 +34,7 @@ public class LoginHandler implements CommandHandler {
 
             try (Connection conn = ConnectionProvider.getConnection()) {
                 MemberDAO dao = new MemberDAOImpl(conn);
-                MemberDTO member = dao.login(id, passwd); // DB 조회 (앞서 작성한 login 메서드)
+                MemberDTO member = dao.login(id, passwd); // DB 조회 (앞서 작성한 login 메서드) //dto로 넘기면 변수를 이렇게 입력할 필요가 없다...
 
                 if (member != null) {
                     // [성공] 세션 얻어와서 AuthUser 저장
