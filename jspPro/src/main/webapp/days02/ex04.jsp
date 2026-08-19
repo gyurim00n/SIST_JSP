@@ -11,8 +11,10 @@
 <%@page import="java.time.LocalDateTime"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%  
-    // ?deptno=20
-   String  pDeptno = request.getParameter("deptno");    
+    // ? 
+    // ?deptno           
+   String  pDeptno = request.getParameter("deptno");  
+    int deptno = (pDeptno == null || pDeptno.trim().isEmpty()) ? 10   : Integer.parseInt(pDeptno);
 %>
 <%
    Connection conn = null;
@@ -34,18 +36,17 @@
       pstmt = conn.prepareStatement(dsql);
       rs = pstmt.executeQuery();
       
-      int deptno;
       String dname, loc;
       
       if ( rs.next()  ) {   
          dlist = new ArrayList<DeptVO>();
          do {
-            deptno = rs.getInt("deptno");
+            int dno = rs.getInt("deptno");
             dname = rs.getString("dname");
             loc = rs.getString("loc");
             
             dvo = DeptVO.builder()
-                     .deptno(deptno)
+                     .deptno(dno)
                      .dname(dname)
                      .loc(loc)
                      .build();
@@ -66,26 +67,23 @@
    }
 %>
 <%
-    // http://localhost/days01/ex05_02.jsp?deptno=20
-    // JSP 기본 내장 객체 9개 : out, request
-    int deptno ; 
-   
    ArrayList<EmpVO> elist = null;
    EmpVO evo = null;
    Iterator<EmpVO> eir = null;
       
-   String sql = """
+   String esql = """
                SELECT empno, ename, job, mgr
                  , TO_CHAR( hiredate, 'yyyy-MM-dd') hiredate, sal, comm, deptno
                FROM emp
-               WHERE deptno IN ( %d )
+               WHERE deptno =  ? 
                ORDER BY deptno ASC
-              """.formatted(  );
+              """;
    
-   out.print(sql);
+   // out.print(esql);
    
    try {
-      pstmt = conn.prepareStatement(sql);
+      pstmt = conn.prepareStatement(esql);
+      pstmt.setInt(1, deptno);
       rs = pstmt.executeQuery();
       
       // Alt + Shift + A
@@ -156,7 +154,7 @@
 </header>
 <div>
   <xmp class="code">
-   
+   days02/ex04.jsp
   </xmp>
   
   <select id="deptno" name="deptno">
@@ -164,17 +162,123 @@
       dir = dlist.iterator();
       while( dir.hasNext() ){
          dvo = dir.next();
-         deptno = dvo.getDeptno();
+         int dno = dvo.getDeptno();
          String dname = dvo.getDname();
     %>
-    <option value="<%= deptno%>"><%= dname %></option>
+    <%-- <option value="<%= dno %>" <%= dno == deptno ? "selected": "" %>><%= dname %></option> --%>
+    <option value="<%= dno %>"><%= dname %></option>
     <%     
       } // while
     %>
   </select>
   
+  <h3>emp list</h3>
+  
+  <table>
+    <thead>
+      <tr>     
+         <th><input type="checkbox" id="ckbAll" name="ckbAll"></th>
+         <th>empno</th>
+         <th>ename</th>
+         <th>job</th>
+         <th>mgr</th>
+         <th>hiredate</th>
+         <th>sal</th>
+         <th>comm</th>
+         <th>deptno</th>
+     </tr> 
+    </thead>
+    <tbody>
+    <%
+       if( elist == null){
+    %>
+        <tr>
+          <td colspan="9">사원이 존재하지 않습니다.</td>
+        </tr>
+    <%      
+       }else{
+         eir = elist.iterator();
+         while( eir.hasNext() ){
+           evo = eir.next();
+    %>
+         <tr>
+           <td><input type="checkbox" id="ckb-<%= evo.getEmpno() %>" data-empno="<%= evo.getEmpno() %>"></td>
+           <td><%= evo.getEmpno() %></td>
+           <td><%= evo.getEname() %></td>
+           <td><%= evo.getJob() %></td>
+           <td><%= evo.getMgr() %></td>
+           <td><%= evo.getHiredate() %></td>
+           <td><%= evo.getSal() %></td>
+           <td><%= evo.getComm() %></td>
+           <td><%= evo.getDeptno() %></td>
+         </tr>
+    <%       
+         } // while
+       } // if
+    %>   
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="9">
+          <span class="badge left red"><%= elist == null ? 0 : elist.size() %>명</span>
+          <a href="javascript:history.back()">뒤로 가기</a>
+          <br>
+          <button>체크한 empno 전송</button>     
+          <!-- ex04_ok.jsp li  empno 출력 -->     
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  
 </div>
 <script>
+
 </script>
+
+
+<script>
+   // 모두 선택 체크박스 처리 수업중 X
+   $("tfoot button").on("click", function () {
+      const ckbs = $("tbody :checkbox:checked");
+      if ( ckbs.length == 0 ){
+         alert("사원을 체크하세요.");
+         return;
+      }
+      
+      const empnos = [];
+      ckbs.each( function(index, element){
+         // <input type="checkbox" id="ckb-7369" data-empno="7369">
+         let empno = $(element).data("empno");
+         empnos.push( empno );
+      } );
+      
+      // 3개누르고 확인 - http://localhost/days02/ex04_ok.jsp?empno=7788&empno=7876&empno=7902
+      // empnos[] -> empno=7369&empno-7902&empno=1111
+      location.href = `ex04_ok.jsp?empno=\${empnos.join("&empno=")}`;
+      
+   });
+</script>
+
+<script>
+  $("#deptno").on("change", function (){
+     let deptno = $(this).val(); // 
+     location.href = `ex04.jsp?deptno=\${deptno}`;
+  });
+</script>
+<script>
+   // ex04.jsp?deptno=30
+  $("#deptno").val(${ param.deptno });
+</script>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
