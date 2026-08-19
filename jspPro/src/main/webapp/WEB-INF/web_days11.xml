@@ -48,23 +48,5 @@
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	
-	<!-- p704 코딩추가 -->
-<servlet>
-    <servlet-name>uploadServlet</servlet-name>
-    <servlet-class>days11.UploadServlet</servlet-class>
-
-    <multipart-config>
-        <location>C:\Tools\apache-tomcat-10.1.57\apache-tomcat-10.1.57\temp</location>
-
-        <max-file-size>-1</max-file-size>
-        <max-request-size>-1</max-request-size>
-        <file-size-threshold>1024</file-size-threshold>
-    </multipart-config>
-</servlet>
-
-<servlet-mapping>
-    <servlet-name>uploadServlet</servlet-name>
-    <url-pattern>/days11/upload</url-pattern>
-</servlet-mapping>
 
 </web-app>

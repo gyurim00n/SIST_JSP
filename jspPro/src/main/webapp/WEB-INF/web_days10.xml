@@ -48,23 +48,28 @@
 		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	
-	<!-- p704 코딩추가 -->
-<servlet>
-    <servlet-name>uploadServlet</servlet-name>
-    <servlet-class>days11.UploadServlet</servlet-class>
-
-    <multipart-config>
-        <location>C:\Tools\apache-tomcat-10.1.57\apache-tomcat-10.1.57\temp</location>
-
-        <max-file-size>-1</max-file-size>
-        <max-request-size>-1</max-request-size>
-        <file-size-threshold>1024</file-size-threshold>
-    </multipart-config>
-</servlet>
-
-<servlet-mapping>
-    <servlet-name>uploadServlet</servlet-name>
-    <url-pattern>/days11/upload</url-pattern>
-</servlet-mapping>
-
+	<!-- 2번 필터 등록: 인증 필ㅌ터 -->
+	<filter>
+		<filter-name>authenticationFilter</filter-name>
+		<filter-class>com.filter.AuthenticationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>authenticationFilter</filter-name>
+		<url-pattern>/days09/admin/* </url-pattern>
+		<url-pattern>/days09/board/write.jsp</url-pattern>
+		<url-pattern>/days09/board/edit.jsp</url-pattern>
+		<url-pattern>/days09/board/delete.jsp  </url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
+	
+	<!-- 3번 필터 등록: 권한 필터 -->
+	<filter>
+		<filter-name>authorizationFilter</filter-name>
+		<filter-class>com.filter.AuthorizationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>authorizationFilter</filter-name>
+		<url-pattern>/days09/admin/* </url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
 </web-app>
